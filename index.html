@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="icon" type="image/x-icon" href="./assets/images/clear.png">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title"> Weather APP </h1>
+      <div class="search-box">
+        <input type="text" id="city-input" placeholder="Enter city name" onchange="weather(this.value)" />
+        <button id="search-btn">
+          <img src="./assets/images/search.png" alt="Search" />
+        </button>
+      </div>
+      <div class="error-message" style="display: none; color: red;">
+        Invalid City Name
+      </div>
+      <div class="weather-info">
+        <img
+          src="./assets/images/clear.png"
+          alt="image is not available"
+          class="weather-icon"
+        />
+        <div class="temperature">25°C</div>
+        <div class="city-name">New York</div>
+        <div class="additional-info">
+          <div class="info-box">
+            <img
+              src="./assets/images/humidity.png"
+              alt="Humidity Icon"
+              class="info-icon"
+            />
+            <div class="info-value" id="humidity">60%</div>
+            <div class="info-label">Humidity</div>
+          </div>
+          <div class="info-box">
+            <img
+              src="./assets/images/wind.png"
+              alt='wind icon'
+              class="info-icon"
+            />
+            <div class="info-value" id="speed">15 km/h</div>
+            <div class="info-label">Wind Speed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const cityInput = document.querySelector("#city-input");
+      const temp = document.querySelector(".temperature");
+      const city_name = document.querySelector(".city-name");
+      const humidity = document.querySelector("#humidity");
+      const speed = document.querySelector("#speed");
+      const status_icon = document.querySelector(".weather-icon");
+      const errorMessage = document.querySelector(".error-message");
+
+      const apiKey = "c06158cf0468e24dbd9b4f86c52cf635";
+      const apiURL = `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&units=metric&q=`;
+
+      async function weather(city) {
+        try {
+          const response = await fetch(apiURL + city);
+          if (!response.ok) {
+            throw new Error("City not found");
+          }
+          const data = await response.json();
+          const status = data.weather[0].main;
+
+          status_icon.src = `./assets/images/${status.toLowerCase()}.png`
+          
+          // switch (status) {
+          //   case "Clear":
+          //   status_icon.src = "./assets/images/clear.png";
+          //     break;
+          //     case "Clouds":
+          //   status_icon.src = "./assets/images/clouds.png";
+          //     break;
+          //     case "Drizzle":
+          //   status_icon.src = "./assets/images/drizzle.png";
+          //     break;
+          //     case "Mist":
+          //   status_icon.src = "./assets/images/mist.png";
+          //     break;
+          //     case "Rain":
+          //   status_icon.src = "./assets/images/rain.png";
+          //     break;
+          //     case "Snow":
+          //   status_icon.src = "./assets/images/snow.png";
+          //     break;
+          
+          //   default:
+          //   status_icon.src = "./assets/images/clear.png";
+          //     break;
+          // }
+
+          city_name.innerHTML = data.name;
+          temp.innerHTML = Math.round(data.main.temp) + "°C";
+          speed.innerHTML = data.wind.speed + " km/h";
+          humidity.innerHTML = data.main.humidity + "%";
+          errorMessage.style.display = "none";
+
+          document.querySelector('.weather-info').style.display = "block"
+        } catch (error) {
+          console.error("Error:", error.message);
+          errorMessage.style.display = "block";
+        }
+      }
+
+      document.querySelector("#search-btn").addEventListener("click", () => {
+        const city = cityInput.value;
+        if (city) {
+          weather(city);
+        } else {
+          errorMessage.style.display = "block";
+        }
+      });
+
+      
+
+    </script>
+  </body>
+</html>
+
